@@ -2,11 +2,19 @@ const express = require("express");
 const request = require("request");
 
 const app = express();
+app.set("view engine", "ejs");
 
-app.get("/result", (req, res) => {
-    request("https://omdbapi.com/?s=california&apikey=thewdb" , (error,response, body) => {
+app.get("/", (req, res) => {
+    res.render("search")
+})
+
+app.get("/results", (req, res) => {
+    var query = req.query.search;
+    var url = `https://omdbapi.com/?s=${query}&apikey=thewdb`
+    request(url , (error,response, body) => {
         if(!error && response.statusCode == 200) {
-            res.send(body);
+            var data = JSON.parse(body);
+            res.render("results", {data: data})
         }
     })
 
